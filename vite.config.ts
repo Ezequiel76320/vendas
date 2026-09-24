@@ -10,6 +10,7 @@ export default defineConfig(() => ({
   },
   plugins: [dyadComponentTagger(), react()],
   resolve: {
+    dedupe: ["react", "react-dom"],
     alias: {
       "@": path.resolve(__dirname, "./src"),
     },
