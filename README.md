@@ -80,6 +80,37 @@ npm run start
 
 O Express serve o conteúdo compilado de `dist` quando ele existe e também expõe a API local. A mesma estrutura pode ser hospedada em VPS, Render, Railway, Cloudflare com runtime Node compatível ou outro servidor Node.js.
 
+## Backend no Render com SQLite persistente
+
+O backend pode ser executado como um Render Web Service sem alterar o SQLite existente.
+
+- **Build Command:** `npm install && npm run build`
+- **Start Command:** `npm start`
+- **Persistent Disk mount path:** `/var/data`
+- **SQLite directory:** `/var/data`
+- **SQLite file:** `/var/data/controlavenda.sqlite`
+- **Health check:** `/api/health`
+
+Configure no Web Service:
+
+```text
+PORT=10000
+CONTROLAVENDA_DATA_DIR=/var/data
+FRONTEND_ORIGIN=https://controlavendas.netlify.app
+```
+
+O Render injeta a porta do serviço; o servidor escuta `PORT` e também se liga a `0.0.0.0`, como exigido para acesso externo. O Persistent Disk deve ser montado em `/var/data` e o arquivo SQLite existente pode ser copiado para `/var/data/controlavenda.sqlite` antes da primeira inicialização. A cópia preserva a estrutura e os dados; não execute o serviço com um diretório temporário.
+
+O tamanho mínimo prático do Persistent Disk é **1 GB**. Para crescimento do histórico e cópias de segurança, prefira começar com **5 GB**. O SQLite atual não usa uploads ou outros diretórios de filesystem além do diretório configurado por `CONTROLAVENDA_DATA_DIR`.
+
+Depois que o Render fornecer a URL, por exemplo `https://controlavenda-api.onrender.com`, configure no Netlify durante o build:
+
+```text
+VITE_API_URL=https://controlavenda-api.onrender.com/api
+```
+
+As rotas de autenticação, banco, RPCs de venda, clientes, produtos, financeiro, orçamentos e demais operações são expostas sob `/api` e usam o token Bearer enviado pelo frontend. O CORS responde com a origem definida em `FRONTEND_ORIGIN`.
+
 ## Funcionalidades preservadas
 
 Dashboard, nova venda, leitor de código de barras, cadastro rápido de produto, produtos, clientes, financeiro, orçamentos, descontos, estoque, pagamentos, histórico, auditoria, relatórios, PDF e conversão de orçamento em venda continuam no frontend atual. O painel de caixa apresenta entradas, saídas e saldo individualmente por dia.

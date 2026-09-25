@@ -66,6 +66,8 @@ const sendError = (res: Response, error: unknown, status = 400) => {
 };
 const responseData = (res: Response, data: unknown) => res.json({ data, error: null });
 const validIdentifier = (value: string) => /^[a-z_][a-z0-9_]*$/i.test(value);
+
+app.get(`${apiPrefix}/health`, (_, res) => responseData(res, { status: "ok" }));
 const numeric = (value: unknown) => Number(value || 0);
 const cleanPayload = (table: string, body: Record<string, unknown>) => {
   const columns = tableColumns[table] || [];
@@ -371,4 +373,4 @@ if (fs.existsSync(clientDist)) {
 }
 
 await db.waitUntilReady();
-app.listen(port, () => console.log(`ControlaVenda local API: http://localhost:${port}`));
+app.listen(port, "0.0.0.0", () => console.log(`ControlaVenda local API: http://0.0.0.0:${port}`));
