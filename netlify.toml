@@ -1,0 +1,12 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+# React Router is a client-side router, so every non-file route must serve index.html.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
